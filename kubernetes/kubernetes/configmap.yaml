@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: velero-lab-config
+  namespace: velero-lab
+data:
+  APP_NAME: "Velero Disaster Recovery Lab"
+  ENVIRONMENT: "test"
