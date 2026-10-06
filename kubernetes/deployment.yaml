@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velero-lab-app
+  namespace: velero-lab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: velero-lab
+  template:
+    metadata:
+      labels:
+        app: velero-lab
+    spec:
+      containers:
+        - name: app
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: velero-lab-config
+            - secretRef:
+                name: velero-lab-secret
+          volumeMounts:
+            - name: persistent-data
+              mountPath: /data
+      volumes:
+        - name: persistent-data
+          persistentVolumeClaim:
+            claimName: velero-lab-pvc
