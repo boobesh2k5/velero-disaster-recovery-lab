@@ -1,8 +1,8 @@
-\# Kubernetes Backup \& Disaster Recovery Using Velero
+# Kubernetes Backup \& Disaster Recovery Using Velero
 
 
 
-\## 1. Project Overview
+## 1. Project Overview
 
 
 
@@ -14,52 +14,36 @@ The objective was to prove recovery of Kubernetes resources and persistent appli
 
 
 
-1\. Application namespace deletion.
+1. Application namespace deletion.
 
-2\. Complete Kubernetes cluster deletion and recreation.
-
-
-
-\---
+2. Complete Kubernetes cluster deletion and recreation.
 
 
 
-\## 2. Environment
+---
 
 
+
+## 2. Environment
 
 | Component | Details |
-
 |---|---|
-
 | Operating System | Windows |
-
 | Container Runtime | Docker Desktop |
-
 | Kubernetes | k3d / K3s |
-
-| Kubernetes Version | v1.35.5+k3s1 |
-
-| kubectl | v1.36.1 |
-
-| k3d | v5.9.0 |
-
-| Velero CLI | v1.18.4 |
-
+| Kubernetes Version | `v1.35.5+k3s1` |
+| kubectl | `v1.36.1` |
+| k3d | `v5.9.0` |
+| Velero CLI | `v1.18.4` |
 | Cluster Name | `velero-lab` |
-
 | Control Plane | 1 |
-
 | Worker | 1 |
-
 | Backup Storage | MinIO |
-
 | MinIO Bucket | `velero` |
 
 
 
-\### Kubernetes Nodes
-
+### Kubernetes Nodes
 
 
 ```text
@@ -100,85 +84,40 @@ Both nodes were verified as `Ready`.
 
 
 
-\---
+---
 
 
 
-\## 3. Architecture
-
-
-
-The lab consists of an external MinIO backup repository and a local two-node Kubernetes cluster.
-
-
+## 4. Architecture
 
 ```text
-
 Windows Host
-
 │
-
 ├── External MinIO
-
 │   └── Bucket: velero
-
 │
-
 └── k3d Kubernetes Cluster
-
-&#x20;   │
-
-&#x20;   ├── Control Plane
-
-&#x20;   ├── Worker Node
-
-&#x20;   │
-
-&#x20;   ├── Velero
-
-&#x20;   ├── Node Agent
-
-&#x20;   │
-
-&#x20;   └── velero-lab Application
-
-&#x20;       ├── Deployment
-
-&#x20;       ├── Service
-
-&#x20;       ├── ConfigMap
-
-&#x20;       ├── Secret
-
-&#x20;       └── PVC
-
-&#x20;            └── /data/important-data.txt
-
+    │
+    ├── Control Plane
+    ├── Worker Node
+    │
+    ├── Velero
+    ├── Node Agent
+    │
+    └── velero-lab Application
+        ├── Deployment
+        ├── Service
+        ├── ConfigMap
+        ├── Secret
+        └── PVC
+            └── /data/important-data.txt
 ```
 
-
-
-Architecture diagram:
-
-
-
-```text
-
-architecture/architecture.png
-
-```
+---
 
 
 
-MinIO was intentionally kept outside Kubernetes so that the backup repository would survive complete cluster deletion.
-
-
-
-\---
-
-
-
-\## 4. External MinIO Configuration
+## 4. External MinIO Configuration
 
 
 
@@ -188,28 +127,18 @@ MinIO was used as the external S3-compatible object storage backend for Velero.
 
 ```text
 
-Bucket:
-
-velero
+Bucket:  velero
 
 
 
-API:
-
-http://host.k3d.internal:9000
+API:  http://host.k3d.internal:9000
 
 
 
-Console:
-
-http://localhost:9001
+Console:  http://localhost:9001
 
 
-
-Persistent Host Storage:
-
-C:
-elero-minio-data
+Persistent Host Storage: C: elero-minio-data
 
 ```
 
@@ -239,11 +168,11 @@ Actual credentials are intentionally not included in this report.
 
 
 
-\---
+---
 
 
 
-\## 5. MinIO Setup Challenge
+## 5. MinIO Setup Challenge
 
 
 
@@ -293,11 +222,11 @@ This maintained the assignment requirement that MinIO remain external to Kuberne
 
 
 
-\---
+---
 
 
 
-\## 6. Velero Installation and Configuration
+## 6. Velero Installation and Configuration
 
 
 
@@ -367,11 +296,11 @@ default    aws    velero    Available    ReadWrite
 
 
 
-\---
+---
 
 
 
-\## 7. Velero Components
+## 7. Velero Components
 
 
 
@@ -379,7 +308,7 @@ The main components were:
 
 
 
-\### Velero Server
+### Velero Server
 
 
 
@@ -395,7 +324,7 @@ velero
 
 
 
-\### Node Agent
+### Node Agent
 
 
 
@@ -415,11 +344,11 @@ During the final cluster recovery, both Node Agent pods reached:
 
 
 
-\---
+---
 
 
 
-\## 8. BackupStorageLocation Authentication Issue
+## 8. BackupStorageLocation Authentication Issue
 
 
 
@@ -435,7 +364,7 @@ SignatureDoesNotMatch
 
 
 
-\### Root Cause
+### Root Cause
 
 
 
@@ -443,7 +372,7 @@ The credentials configured for Velero did not correctly match the MinIO credenti
 
 
 
-\### Resolution
+### Resolution
 
 
 
@@ -451,7 +380,7 @@ The Velero cloud credentials secret was recreated using the correct MinIO creden
 
 
 
-\### Result
+### Result
 
 
 
@@ -473,11 +402,11 @@ Velero was then able to communicate successfully with MinIO.
 
 
 
-\---
+---
 
 
 
-\## 9. Test Application
+## 9. Test Application
 
 
 
@@ -541,11 +470,11 @@ Mount Path: /data
 
 
 
-\---
+---
 
 
 
-\## 10. Persistent Data
+## 10. Persistent Data
 
 
 
@@ -581,11 +510,11 @@ The file was verified before creating the backup.
 
 
 
-\---
+---
 
 
 
-\## 11. Pre-Backup Validation
+## 11. Pre-Backup Validation
 
 
 
@@ -641,11 +570,11 @@ Velero Disaster Recovery Lab - Boobeshwaran - 2026-10-06
 
 
 
-\---
+---
 
 
 
-\## 12. Initial Persistent Volume Backup Issue
+## 12. Initial Persistent Volume Backup Issue
 
 
 
@@ -653,7 +582,7 @@ The first Velero backup reached the `Completed` phase, but the persistent volume
 
 
 
-\### Root Cause
+### Root Cause
 
 
 
@@ -665,7 +594,7 @@ The backup logs showed that the volume was skipped because of the volume opt-in/
 
 
 
-\### Resolution
+### Resolution
 
 
 
@@ -705,11 +634,11 @@ The persistent volume was successfully included through Pod Volume Backup using 
 
 
 
-\---
+---
 
 
 
-\## 13. Final Backup
+## 13. Final Backup
 
 
 
@@ -769,11 +698,11 @@ The final backup was considered valid because both Kubernetes resources and pers
 
 
 
-\---
+---
 
 
 
-\## 14. Disaster Recovery Test 1 — Namespace Deletion
+## 14. Disaster Recovery Test 1 — Namespace Deletion
 
 
 
@@ -797,7 +726,7 @@ The application resources were removed.
 
 
 
-\### Restore
+### Restore
 
 
 
@@ -881,15 +810,15 @@ The content exactly matched the original data.
 
 
 
-\*\*Result: PASSED\*\*
+**Result: PASSED\*\*
 
 
 
-\---
+---
 
 
 
-\## 15. Disaster Recovery Test 2 — Complete Cluster Loss
+## 15. Disaster Recovery Test 2 — Complete Cluster Loss
 
 
 
@@ -957,11 +886,11 @@ This confirmed that the backup repository survived the complete Kubernetes clust
 
 
 
-\---
+---
 
 
 
-\## 16. New Cluster Creation
+## 16. New Cluster Creation
 
 
 
@@ -1021,11 +950,11 @@ No backup data was manually copied.
 
 
 
-\---
+---
 
 
 
-\## 17. Node Agent Issue After Cluster Recreation
+## 17. Node Agent Issue After Cluster Recreation
 
 
 
@@ -1033,7 +962,7 @@ After reinstalling Velero on the new cluster, the Node Agent initially failed to
 
 
 
-\### Cause
+### Cause
 
 
 
@@ -1067,7 +996,7 @@ The k3d/K3s nodes required:
 
 
 
-\### Resolution
+### Resolution
 
 
 
@@ -1101,11 +1030,11 @@ The Velero server was also running.
 
 
 
-\---
+---
 
 
 
-\## 18. Previous Backup Discovery
+## 18. Previous Backup Discovery
 
 
 
@@ -1149,11 +1078,11 @@ This proved that the backup existed independently of the deleted Kubernetes clus
 
 
 
-\---
+---
 
 
 
-\## 19. Disaster 2 Restore
+## 19. Disaster 2 Restore
 
 
 
@@ -1237,15 +1166,15 @@ The original data was recovered successfully.
 
 
 
-\*\*Result: PASSED\*\*
+**Result: PASSED\*\*
 
 
 
-\---
+---
 
 
 
-\## 20. Scheduled Backup
+## 20. Scheduled Backup
 
 
 
@@ -1301,15 +1230,15 @@ The schedule was successfully created and enabled.
 
 
 
-\---
+---
 
 
 
-\## 21. Important Resource Names
+## 21. Important Resource Names
 
 
 
-\### Kubernetes
+### Kubernetes
 
 
 
@@ -1335,7 +1264,7 @@ k3d-velero-lab-agent-0
 
 
 
-\### Namespaces
+### Namespaces
 
 
 
@@ -1349,7 +1278,7 @@ velero-lab
 
 
 
-\### Application
+### Application
 
 
 
@@ -1369,7 +1298,7 @@ PVC: velero-lab-pvc
 
 
 
-\### Velero
+### Velero
 
 
 
@@ -1389,7 +1318,7 @@ BackupStorageLocation: default
 
 
 
-\### MinIO
+### MinIO
 
 
 
@@ -1408,7 +1337,7 @@ elero-minio-data
 
 
 
-\### Persistent Data
+### Persistent Data
 
 
 
@@ -1432,35 +1361,25 @@ Velero Disaster Recovery Lab - Boobeshwaran - 2026-10-06
 
 
 
-\---
+---
 
 
 
-\## 22. Troubleshooting Summary
-
-
+## 22. Troubleshooting Summary
 
 | Issue | Root Cause | Resolution |
-
 |---|---|---|
+| MinIO image issue | Image/environment problem | Built and ran the official MinIO source release |
+| `SignatureDoesNotMatch` | Incorrect MinIO credentials in Velero | Recreated the credentials and restarted Velero |
+| PVC not included | Volume was not opted into Node Agent backup | Added the `backup.velero.io/backup-volumes` annotation |
+| Node Agent not starting | Incorrect kubelet host paths | Changed the paths to `/var/lib/kubelet/...` |
+| Backup showed `Completed` but data was missing | Backup completion alone did not confirm persistent-data backup | Checked backup details, logs, and Pod Volume Backup (PVB) status |
 
-| MinIO image issue | Image/environment problem | Built and ran official MinIO source release |
-
-| `SignatureDoesNotMatch` | Incorrect MinIO credentials in Velero | Recreated credentials and restarted Velero |
-
-| PVC not included | Volume not opted into Node Agent backup | Added `backup.velero.io/backup-volumes` annotation |
-
-| Node Agent not starting | Incorrect kubelet host paths | Changed paths to `/var/lib/kubelet/...` |
-
-| Backup showed `Completed` but data missing | Backup phase alone was insufficient | Checked backup details/logs and PVB status |
+---
 
 
 
-\---
-
-
-
-\## 23. Evidence
+## 23. Evidence
 
 
 
@@ -1488,47 +1407,47 @@ Evidence should include relevant screenshots/output for:
 
 
 
-\- Cluster nodes
+- Cluster nodes
 
-\- MinIO availability
+- MinIO availability
 
-\- BackupStorageLocation
+- BackupStorageLocation
 
-\- Application resources
+- Application resources
 
-\- PVC
+- PVC
 
-\- Persistent data before backup
+- Persistent data before backup
 
-\- Backup details
+- Backup details
 
-\- Namespace deletion
+- Namespace deletion
 
 \- Restore status
 
-\- Restored resources
+- Restored resources
 
-\- Persistent data after restore
+- Persistent data after restore
 
-\- Complete cluster deletion
+- Complete cluster deletion
 
-\- New cluster
+- New cluster
 
-\- Previous backup discovery
+- Previous backup discovery
 
-\- Final restore
+- Final restore
 
-\- Persistent-data verification
+- Persistent-data verification
 
-\- Scheduled backup
-
-
-
-\---
+- Scheduled backup
 
 
 
-\## 24. Security
+---
+
+
+
+## 24. Security
 
 
 
@@ -1536,17 +1455,17 @@ The following were kept outside the Git repository:
 
 
 
-\- MinIO passwords
+- MinIO passwords
 
-\- MinIO secret keys
+- MinIO secret keys
 
-\- Velero credentials
+- Velero credentials
 
-\- kubeconfig credentials
+- kubeconfig credentials
 
-\- Cloud credentials
+- Cloud credentials
 
-\- Access tokens
+- Access tokens
 
 
 
@@ -1570,93 +1489,67 @@ No real credentials or secrets are included in the project repository.
 
 
 
-\---
+---
 
 
 
-\## 25. Final Validation
-
-
+## 25. Final Validation
 
 | Requirement | Result |
-
 |---|---|
-
-| Two-node Kubernetes cluster | PASSED |
-
-| 1 Control Plane + 1 Worker | PASSED |
-
-| External MinIO | PASSED |
-
-| MinIO bucket `velero` | PASSED |
-
-| Velero installation | PASSED |
-
-| BackupStorageLocation | PASSED |
-
-| Test application | PASSED |
-
-| PVC | PASSED |
-
-| Persistent data | PASSED |
-
-| Persistent-data backup | PASSED |
-
-| Namespace deletion restore | PASSED |
-
-| Original data after namespace restore | PASSED |
-
-| Complete cluster deletion | PASSED |
-
-| New two-node cluster | PASSED |
-
-| Previous backup discovery | PASSED |
-
-| Complete cluster restore | PASSED |
-
-| Original data after cluster restore | PASSED |
-
-| Daily schedule | PASSED |
-
-| Seven-day retention | PASSED |
-
-| Troubleshooting documented | PASSED |
+| Two-node Kubernetes cluster | ✅ PASSED |
+| 1 Control Plane + 1 Worker | ✅ PASSED |
+| External MinIO | ✅ PASSED |
+| MinIO bucket `velero` | ✅ PASSED |
+| Velero installation | ✅ PASSED |
+| BackupStorageLocation | ✅ PASSED |
+| Test application | ✅ PASSED |
+| PVC | ✅ PASSED |
+| Persistent data | ✅ PASSED |
+| Persistent-data backup | ✅ PASSED |
+| Namespace deletion restore | ✅ PASSED |
+| Original data after namespace restore | ✅ PASSED |
+| Complete cluster deletion | ✅ PASSED |
+| New two-node cluster | ✅ PASSED |
+| Previous backup discovery | ✅ PASSED |
+| Complete cluster restore | ✅ PASSED |
+| Original data after cluster restore | ✅ PASSED |
+| Daily schedule | ✅ PASSED |
+| Seven-day retention | ✅ PASSED |
+| Troubleshooting documented | ✅ PASSED |
+---
 
 
 
-\---
+## 26. Key Lessons Learned
 
 
 
-\## 26. Key Lessons Learned
+- Kubernetes resources and persistent application data both need to be protected.
+
+- A Velero backup showing `Completed` does not by itself prove that persistent data was backed up.
+
+- Backup details, logs and Pod Volume Backup status must be checked.
+
+- External backup storage is important when recovering from complete cluster loss.
+
+- MinIO must remain outside the Kubernetes cluster for this disaster recovery design.
+  
+- Velero can reconnect to an existing backup repository after a new Kubernetes cluster is created.
+ 
+- PVC recovery must be validated by checking the actual application data.
+
+- Correct Node Agent host paths are required for file-system backup in the k3d/K3s environment.
+
+- Backup retention and scheduled backups provide a basic automated recovery strategy.
 
 
 
-\- Kubernetes resources and persistent application data both need to be protected.
-
-\- A Velero backup showing `Completed` does not by itself prove that persistent data was backed up.
-
-\- Backup details, logs and Pod Volume Backup status must be checked.
-
-\- External backup storage is important when recovering from complete cluster loss.
-
-\- MinIO must remain outside the Kubernetes cluster for this disaster recovery design.
-
-\- Velero can reconnect to an existing backup repository after a new Kubernetes cluster is created.
-
-\- PVC recovery must be validated by checking the actual application data.
-
-\- Correct Node Agent host paths are required for file-system backup in the k3d/K3s environment.
-
-\- Backup retention and scheduled backups provide a basic automated recovery strategy.
+---
 
 
 
-\---
-
-
-
-\## 27. Final Result
+## 27. Final Result
 
 
 
